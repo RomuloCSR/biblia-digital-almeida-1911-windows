@@ -1,6 +1,6 @@
 # Bíblia Digital Almeida 1911 em PT-BR (Domínio Público)
 
-Leitor bíblico leve, rápido e offline para **Windows 11** e **Linux**, com atualização ortográfica e gramatical realizada em **11/2026** para o português do Brasil.
+Leitor bíblico leve, rápido e offline para **Windows 11**, com atualização ortográfica e gramatical realizada em **11/2026** para o português do Brasil.
 
 ## Como baixar e ler no Windows (Sem instalar nada)
 
