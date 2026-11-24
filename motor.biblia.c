@@ -1418,6 +1418,92 @@ void atualizar_ortografia(char *texto) {
     substituir_texto(texto, "de sorte que", "de modo que");
     substituir_texto(texto, "De sorte que", "De modo que");
 
+// 12. Revisão complementar pós-varredura e leitura (Lote 1 - Nov/2026)
+ // 12.1 Ditongos antigos (oi -> ou) e consoantes mudas (ct, pt)
+ substituir_inicio_palavra(texto, "oiro", "ouro");
+ substituir_inicio_palavra(texto, "Oiro", "Ouro");
+ substituir_inicio_palavra(texto, "coiro", "couro");
+ substituir_inicio_palavra(texto, "toiro", "touro");
+ substituir_inicio_palavra(texto, "calaboiço", "calabouço");
+ substituir_palavra_inteira(texto, "oiça", "ouça");
+ substituir_palavra_inteira(texto, "oiçam", "ouçam");
+ substituir_inicio_palavra(texto, "hemorrhoid", "hemorroid");
+
+ substituir_inicio_palavra(texto, "recto", "reto");
+ substituir_inicio_palavra(texto, "Recto", "Reto");
+ substituir_inicio_palavra(texto, "recta", "reta");
+ substituir_inicio_palavra(texto, "Recta", "Reta");
+ substituir_inicio_palavra(texto, "esculptur", "escultur");
+ substituir_inicio_palavra(texto, "auctor", "autor");
+ substituir_inicio_palavra(texto, "aspecto", "aspeto");
+ substituir_inicio_palavra(texto, "expectação", "expetação");
+ substituir_inicio_palavra(texto, "incorruptibil", "incorrutibil");
+ substituir_inicio_palavra(texto, "incorruptivel", "incorrutível");
+ substituir_inicio_palavra(texto, "corruptivel", "corrutível");
+ substituir_inicio_palavra(texto, "corruptor", "corrutor");
+ substituir_inicio_palavra(texto, "corrupto", "corruto");
+ substituir_inicio_palavra(texto, "excepto", "exceto");
+ substituir_inicio_palavra(texto, "tecto", "teto");
+ substituir_inicio_palavra(texto, "inspector", "inspetor");
+ substituir_inicio_palavra(texto, "dictado", "ditado");
+ substituir_inicio_palavra(texto, "espectaculo", "espetáculo");
+ substituir_inicio_palavra(texto, "facto", "fato");
+ substituir_inicio_palavra(texto, "aprompt", "apront");
+ substituir_inicio_palavra(texto, "districto", "distrito");
+ substituir_inicio_palavra(texto, "jactancia", "jactância");
+ substituir_inicio_palavra(texto, "interdicto", "interdito");
+ substituir_inicio_palavra(texto, "aqueducto", "aqueduto");
+ substituir_inicio_palavra(texto, "estructur", "estrutur");
+ substituir_inicio_palavra(texto, "indirect", "indiret");
+ substituir_inicio_palavra(texto, "conductor", "condutor");
+
+ // 12.2 Acentuação gráfica e vocabulário revisado
+ substituir_inicio_palavra(texto, "talamo", "tálamo");
+ substituir_inicio_palavra(texto, "heroe", "herói");
+ substituir_inicio_palavra(texto, "simplices", "símplices");
+ substituir_inicio_palavra(texto, "diluvio", "dilúvio");
+ substituir_inicio_palavra(texto, "silencio", "silêncio");
+ substituir_inicio_palavra(texto, "auxilio", "auxílio");
+ substituir_inicio_palavra(texto, "notorio", "notório");
+ substituir_inicio_palavra(texto, "psalterio", "saltério");
+ substituir_inicio_palavra(texto, "artificio", "artifício");
+ substituir_inicio_palavra(texto, "labio", "lábio");
+ substituir_inicio_palavra(texto, "divorcio", "divórcio");
+ substituir_inicio_palavra(texto, "premio", "prêmio");
+ substituir_inicio_palavra(texto, "sanguinario", "sanguinário");
+ substituir_inicio_palavra(texto, "repudio", "repúdio");
+ substituir_inicio_palavra(texto, "cilicio", "cilício");
+ substituir_inicio_palavra(texto, "arabio", "arábio");
+ substituir_inicio_palavra(texto, "vicio", "vício");
+ substituir_inicio_palavra(texto, "sitio", "sítio");
+ substituir_inicio_palavra(texto, "habitavel", "habitável");
+ substituir_inicio_palavra(texto, "historia", "história");
+ substituir_inicio_palavra(texto, "ante-hontem", "anteontem");
+ substituir_inicio_palavra(texto, "Hespanha", "Espanha");
+ substituir_palavra_inteira(texto, "alumia", "ilumina");
+ substituir_palavra_inteira(texto, "expurga-me", "limpa-me");
+ substituir_palavra_inteira(texto, "assenhoreiem", "tomem posse");
+
+ // 12.3 Nomes próprios e gentílicos bíblicos padronizados
+ substituir_inicio_palavra(texto, "Zebedeo", "Zebedeu");
+ substituir_inicio_palavra(texto, "amorrheo", "amorreu");
+ substituir_inicio_palavra(texto, "nazireo", "nazireu");
+ substituir_inicio_palavra(texto, "arameo", "arameu");
+ substituir_inicio_palavra(texto, "keneo", "queneu");
+ substituir_inicio_palavra(texto, "Keneo", "Queneu");
+ substituir_inicio_palavra(texto, "kenezeo", "quenezeu");
+ substituir_inicio_palavra(texto, "horeo", "horeu");
+ substituir_inicio_palavra(texto, "Hebron", "Hebrom");
+ substituir_inicio_palavra(texto, "Haman", "Hamã");
+ substituir_inicio_palavra(texto, "Hesbon", "Hesbom");
+ substituir_inicio_palavra(texto, "Hilkias", "Hilquias");
+ substituir_inicio_palavra(texto, "Haran", "Harã");
+ substituir_inicio_palavra(texto, "Horeb", "Horebe");
+ substituir_inicio_palavra(texto, "Heman", "Hemã");
+ substituir_inicio_palavra(texto, "Hezron", "Hezrom");
+ substituir_inicio_palavra(texto, "Hanun", "Hanum");
+ substituir_inicio_palavra(texto, "Habacuc", "Habacuque");
+
     converter_infinitivo_lusitano_para_gerundio(texto);
 }
 
