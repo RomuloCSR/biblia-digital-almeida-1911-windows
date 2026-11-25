@@ -1,12 +1,11 @@
 /* =============================================================================
 - PROJETO: Bíblia Digital Almeida 1911 em PT-BR (Domínio Público)
 -          Atualização Ortográfica e Gramatical realizada em 11/2026
-- OBJETIVO: Motor de navegação multiplataforma (Windows 11 / Linux), limpeza
--           Markdown e atualização ortográfica/gramatical completa para PT-BR.
+- OBJETIVO: Motor de navegação para Windows 11, limpeza Markdown e
+-           atualização ortográfica/gramatical completa para PT-BR.
 - AUTOR: Romulo CSR (GitHub: RomuloCSR)
-- AMBIENTE: Windows 11 (PowerShell / Windows Terminal) & Linux / IDE Geany
-- COMPILAR (Windows): gcc -O2 -Wall -Wextra motor.biblia.c -o motor.biblia.exe
-- COMPILAR (Linux):   gcc -O2 -Wall -Wextra motor.biblia.c -o motor.biblia
+- AMBIENTE: Windows 11 (PowerShell / Windows Terminal) / IDE Geany
+- COMPILAR: gcc -O2 -Wall -Wextra motor.biblia.c -o motor.biblia.exe
 - =============================================================================
  */
 
