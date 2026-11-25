@@ -291,6 +291,14 @@ void substituir_inicio_palavra(char *str, const char *antigo, const char *novo) 
     size_t tam_novo = strlen(novo);
     size_t usado = 0;
 
+    /* A regra acrescenta acento? (o "novo" tem mais bytes não-ASCII que o "antigo") */
+    int nao_ascii_antigo = 0, nao_ascii_novo = 0;
+    for (size_t k = 0; k < tam_antigo; k++) if ((unsigned char)antigo[k] >= 0x80) nao_ascii_antigo++;
+    for (size_t k = 0; k < tam_novo; k++) if ((unsigned char)novo[k] >= 0x80) nao_ascii_novo++;
+    int acrescenta_acento = nao_ascii_novo > nao_ascii_antigo;
+    /* Regras que só tiram o "h" antigo (sahi -> saí, trahi -> traí) valem para todo o verbo */
+    if (strchr(antigo, 'h') != NULL && strchr(novo, 'h') == NULL) acrescenta_acento = 0;
+
     buffer[0] = '\0';
     char *atual = str;
 
@@ -303,6 +311,22 @@ void substituir_inicio_palavra(char *str, const char *antigo, const char *novo) 
             if (prev < 0x80 && !isalpha(prev)) {
                 eh_inicio = 1;
             }
+        }
+
+        /* Proteção: se a regra ACRESCENTA acento (ex.: gloria -> glória),
+           só vale para a palavra e suas formas nominais (-s, -o, -a, -os, -as).
+           Evita "gloriar" -> "glóriar", "continuou" -> "contínuou", "homens" -> "homems". */
+        if (eh_inicio && acrescenta_acento) {
+            const char *resto_p = pos + tam_antigo;
+            int tam_resto = 0;
+            while (resto_p[tam_resto] != '\0' &&
+                   !((unsigned char)resto_p[tam_resto] < 0x80 && !isalpha((unsigned char)resto_p[tam_resto]))) {
+                tam_resto++;
+            }
+            int resto_ok = (tam_resto == 0) ||
+                (tam_resto == 1 && (resto_p[0] == 's' || resto_p[0] == 'o' || resto_p[0] == 'a')) ||
+                (tam_resto == 2 && resto_p[1] == 's' && (resto_p[0] == 'o' || resto_p[0] == 'a' || resto_p[0] == 'e'));
+            if (!resto_ok) eh_inicio = 0;
         }
 
         if (!eh_inicio) {
@@ -682,6 +706,36 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "lh'o", "lho");         substituir_inicio_palavra(texto, "lh'a", "lha");
     substituir_inicio_palavra(texto, "lh'os", "lhos");       substituir_inicio_palavra(texto, "lh'as", "lhas");
 
+    /* Contrações com maiúscula e outras que faltavam (antes: "N'aquelle" -> "Em aquele") */
+    substituir_inicio_palavra(texto, "N'aquelles", "Naqueles"); substituir_inicio_palavra(texto, "N'aquellas", "Naquelas");
+    substituir_inicio_palavra(texto, "N'aquelle", "Naquele");   substituir_inicio_palavra(texto, "N'aquella", "Naquela");
+    substituir_inicio_palavra(texto, "N'aquillo", "Naquilo");   substituir_inicio_palavra(texto, "D'aquillo", "Daquilo");
+    substituir_inicio_palavra(texto, "D'aquelle", "Daquele");   substituir_inicio_palavra(texto, "D'aquella", "Daquela");
+    substituir_inicio_palavra(texto, "D'aquelles", "Daqueles"); substituir_inicio_palavra(texto, "D'aquellas", "Daquelas");
+    substituir_inicio_palavra(texto, "d'aquelles", "daqueles"); substituir_inicio_palavra(texto, "d'aquellas", "daquelas");
+    substituir_inicio_palavra(texto, "n'aquelles", "naqueles"); substituir_inicio_palavra(texto, "n'aquellas", "naquelas");
+    substituir_inicio_palavra(texto, "N'isto", "Nisto");        substituir_inicio_palavra(texto, "N'isso", "Nisso");
+    substituir_inicio_palavra(texto, "D'isto", "Disto");        substituir_inicio_palavra(texto, "D'isso", "Disso");
+    substituir_inicio_palavra(texto, "N'este", "Neste");        substituir_inicio_palavra(texto, "N'esta", "Nesta");
+    substituir_inicio_palavra(texto, "N'estes", "Nestes");      substituir_inicio_palavra(texto, "N'estas", "Nestas");
+    substituir_inicio_palavra(texto, "N'esse", "Nesse");        substituir_inicio_palavra(texto, "N'essa", "Nessa");
+    substituir_inicio_palavra(texto, "n'esse", "nesse");        substituir_inicio_palavra(texto, "n'essa", "nessa");
+    substituir_inicio_palavra(texto, "n'esses", "nesses");      substituir_inicio_palavra(texto, "n'essas", "nessas");
+    substituir_inicio_palavra(texto, "d'esse", "desse");        substituir_inicio_palavra(texto, "d'essa", "dessa");
+    substituir_inicio_palavra(texto, "N'um", "Num");            substituir_inicio_palavra(texto, "N'uma", "Numa");
+    substituir_inicio_palavra(texto, "n'algum", "nalgum");      substituir_inicio_palavra(texto, "n'alguma", "nalguma");
+    substituir_inicio_palavra(texto, "n'alguns", "nalguns");    substituir_inicio_palavra(texto, "n'algumas", "nalgumas");
+    substituir_inicio_palavra(texto, "n'outro", "noutro");      substituir_inicio_palavra(texto, "n'outra", "noutra");
+    substituir_inicio_palavra(texto, "n'outros", "noutros");    substituir_inicio_palavra(texto, "n'outras", "noutras");
+    /* Pronome depois de hífen: "ataram-n'o" -> "ataram-no" (antes virava "ataram-em o") */
+    substituir_texto(texto, "-n'os", "-nos");                   substituir_texto(texto, "-n'as", "-nas");
+    substituir_texto(texto, "-n'o", "-no");                     substituir_texto(texto, "-n'a", "-na");
+    /* me/te + o/a: "m'o" -> "mo", "t'a" -> "ta" */
+    substituir_inicio_palavra(texto, "m'os", "mos");            substituir_inicio_palavra(texto, "m'as", "mas");
+    substituir_inicio_palavra(texto, "m'o", "mo");              substituir_inicio_palavra(texto, "m'a", "ma");
+    substituir_inicio_palavra(texto, "t'os", "tos");            substituir_inicio_palavra(texto, "t'as", "tas");
+    substituir_inicio_palavra(texto, "t'o", "to");              substituir_inicio_palavra(texto, "t'a", "ta");
+
     substituir_inicio_palavra(texto, "d'", "de ");
     substituir_inicio_palavra(texto, "D'", "De ");
     substituir_inicio_palavra(texto, "n'", "em ");
@@ -806,7 +860,8 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "somno", "sono");
     substituir_inicio_palavra(texto, "hymno", "hino");
     substituir_inicio_palavra(texto, "alumno", "aluno");
-    substituir_inicio_palavra(texto, "calumni", "calúni");
+    substituir_inicio_palavra(texto, "calumni", "calúni");    /* calúnia(s) */
+    substituir_inicio_palavra(texto, "calumni", "caluni");    /* caluniar, caluniador... */
     substituir_inicio_palavra(texto, "columna", "coluna");
     substituir_inicio_palavra(texto, "Omnipotente", "Onipotente");
     substituir_inicio_palavra(texto, "omnipotente", "onipotente");
@@ -819,6 +874,12 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "sciencia", "ciência");
 
     // 7. Aplica regras morfológicas de sufixos, ênclises, mesóclises e compostos com hífen
+    /* "eil-o" -> "ei-lo" (sem acento); precisa vir antes das ênclises */
+    substituir_palavra_inteira(texto, "eil-o", "ei-lo");     substituir_palavra_inteira(texto, "Eil-o", "Ei-lo");
+    substituir_palavra_inteira(texto, "eil-a", "ei-la");     substituir_palavra_inteira(texto, "Eil-a", "Ei-la");
+    substituir_palavra_inteira(texto, "eil-os", "ei-los");   substituir_palavra_inteira(texto, "Eil-os", "Ei-los");
+    substituir_palavra_inteira(texto, "eil-as", "ei-las");   substituir_palavra_inteira(texto, "Eil-as", "Ei-las");
+
     atualizar_sufixos_e_enclises(texto);
 
     // 8. Flexões irregulares e vocabulário histórico de 1911
@@ -882,7 +943,9 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "Bem-Aventurad", "Bem-aventurad");
     substituir_inicio_palavra(texto, "Bem-Aventuranç", "Bem-aventuranç");
 
-    substituir_inicio_palavra(texto, "aza", "asa");           substituir_inicio_palavra(texto, "Aza", "Asa");
+    /* Só a palavra "aza(s)"; antes estragava nomes: Azarias -> Asarias */
+    substituir_palavra_inteira(texto, "aza", "asa");          substituir_palavra_inteira(texto, "azas", "asas");
+    substituir_palavra_inteira(texto, "Azas", "Asas");
     substituir_inicio_palavra(texto, "vasia", "vazia");       substituir_inicio_palavra(texto, "vasio", "vazio");
     substituir_inicio_palavra(texto, "abraza", "abrasa");     substituir_inicio_palavra(texto, "abraze", "abrase");
     substituir_inicio_palavra(texto, "abrazou", "abrasou");   substituir_inicio_palavra(texto, "arraza", "arrasa");
@@ -947,7 +1010,9 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "mangedoura", "manjedoura");
     substituir_inicio_palavra(texto, "engeita", "enjeita");   substituir_inicio_palavra(texto, "hereje", "herege");
     substituir_inicio_palavra(texto, "lisonge", "lisonje");   substituir_inicio_palavra(texto, "bozin", "buzin");
-    substituir_inicio_palavra(texto, "tribu", "tribo");       substituir_inicio_palavra(texto, "thesoiro", "tesouro");
+    /* Só "tribu(s)"; antes estragava tributo, tribuno, tribunal */
+    substituir_palavra_inteira(texto, "tribu", "tribo");      substituir_palavra_inteira(texto, "tribus", "tribos");
+    substituir_inicio_palavra(texto, "thesoiro", "tesouro");
     substituir_inicio_palavra(texto, "taboado", "tabuado");   substituir_inicio_palavra(texto, "taboinha", "tabuinha");
     substituir_inicio_palavra(texto, "taboa", "tábua");       substituir_inicio_palavra(texto, "taboas", "tábuas");
     substituir_inicio_palavra(texto, "sobaco", "sovaco");     substituir_inicio_palavra(texto, "gloton", "gluton");
@@ -1016,11 +1081,13 @@ void atualizar_ortografia(char *texto) {
     substituir_inicio_palavra(texto, "pátriarca", "patriarca");
     substituir_inicio_palavra(texto, "fábricador", "fabricador");
     substituir_texto(texto, "aos pães e às mães", "aos pais e às mães");
-    substituir_inicio_palavra(texto, "ahi", "aí");            substituir_inicio_palavra(texto, "Ahi", "Aí");
+    /* Só a palavra "ahi" (= aí); antes estragava nomes: Ahimaas -> Aímaas */
+    substituir_palavra_inteira(texto, "ahi", "aí");           substituir_palavra_inteira(texto, "Ahi", "Aí");
     substituir_inicio_palavra(texto, "alli", "ali");          substituir_inicio_palavra(texto, "nú", "nu");
     substituir_inicio_palavra(texto, "núa", "nua");           substituir_inicio_palavra(texto, "nús", "nus");
-    substituir_inicio_palavra(texto, "joven", "jovem");       substituir_inicio_palavra(texto, "homen", "homem");
-    substituir_inicio_palavra(texto, "algums", "alguns");     substituir_inicio_palavra(texto, "mez", "mês");
+    /* Só a palavra inteira; antes "homens" virava "homems" (1158 vezes) */
+    substituir_palavra_inteira(texto, "joven", "jovem");      substituir_palavra_inteira(texto, "homen", "homem");
+    substituir_inicio_palavra(texto, "algums", "alguns");     substituir_palavra_inteira(texto, "mez", "mês");
     substituir_inicio_palavra(texto, "mezes", "meses");       substituir_inicio_palavra(texto, "tres", "três");
     substituir_inicio_palavra(texto, "Tres", "Três");         substituir_inicio_palavra(texto, "paiz", "país");
     substituir_inicio_palavra(texto, "paizes", "países");     substituir_inicio_palavra(texto, "Satanaz", "Satanás");
@@ -1435,8 +1502,7 @@ void atualizar_ortografia(char *texto) {
  substituir_inicio_palavra(texto, "Recta", "Reta");
  substituir_inicio_palavra(texto, "esculptur", "escultur");
  substituir_inicio_palavra(texto, "auctor", "autor");
- substituir_inicio_palavra(texto, "aspecto", "aspeto");
- substituir_inicio_palavra(texto, "expectação", "expetação");
+ /* "aspecto" e "expectação" ficam como estão: no PT-BR o "c" se mantém */
  substituir_inicio_palavra(texto, "incorruptibil", "incorrutibil");
  substituir_inicio_palavra(texto, "incorruptivel", "incorrutível");
  substituir_inicio_palavra(texto, "corruptivel", "corrutível");
@@ -1503,6 +1569,72 @@ void atualizar_ortografia(char *texto) {
  substituir_inicio_palavra(texto, "Hezron", "Hezrom");
  substituir_inicio_palavra(texto, "Hanun", "Hanum");
  substituir_inicio_palavra(texto, "Habacuc", "Habacuque");
+
+    /* 9. Acertos finais da revisão de 11/2026 (só grafia, sem trocar palavras) */
+    substituir_texto(texto, "irreprehens", "irrepreens");
+    substituir_palavra_inteira(texto, "Siria", "Síria");         substituir_palavra_inteira(texto, "siros", "sírios");
+    substituir_palavra_inteira(texto, "Efeso", "Éfeso");         substituir_palavra_inteira(texto, "Tarsis", "Társis");
+    substituir_palavra_inteira(texto, "aflicto", "aflito");      substituir_palavra_inteira(texto, "aflicta", "aflita");
+    substituir_palavra_inteira(texto, "aflictos", "aflitos");    substituir_palavra_inteira(texto, "aflictas", "aflitas");
+    substituir_palavra_inteira(texto, "mirrha", "mirra");
+    substituir_palavra_inteira(texto, "oficio", "ofício");       substituir_palavra_inteira(texto, "oficios", "ofícios");
+    substituir_palavra_inteira(texto, "paralitico", "paralítico"); substituir_palavra_inteira(texto, "paraliticos", "paralíticos");
+    substituir_palavra_inteira(texto, "saduceos", "saduceus");
+    substituir_palavra_inteira(texto, "aneis", "anéis");
+    substituir_palavra_inteira(texto, "dificil", "difícil");     substituir_palavra_inteira(texto, "eficacia", "eficácia");
+    substituir_palavra_inteira(texto, "geteo", "geteu");
+    substituir_palavra_inteira(texto, "traír", "trair");         substituir_palavra_inteira(texto, "atraír", "atrair");
+    substituir_palavra_inteira(texto, "saír", "sair");           substituir_palavra_inteira(texto, "caír", "cair");
+    substituir_palavra_inteira(texto, "distraír", "distrair");
+    /* saiu, caiu, traiu, saindo, atrairei: sem acento */
+    substituir_texto(texto, "aíu", "aiu");                       substituir_texto(texto, "aíndo", "aindo");
+    substituir_texto(texto, "aírei", "airei");                   substituir_texto(texto, "aíremos", "airemos");
+    substituir_texto(texto, "aíria", "airia");
+    /* Leitura de 25/11/2026 (Gn 6, Mt 2) */
+    substituir_palavra_inteira(texto, "covado", "côvado");
+    substituir_palavra_inteira(texto, "dadiva", "dádiva");       substituir_palavra_inteira(texto, "dadivas", "dádivas");
+    substituir_texto(texto, "eis-que", "eis que");               substituir_texto(texto, "Eis-que", "Eis que");
+    substituir_palavra_inteira(texto, "Judah", "Judá");
+    /* Mesóclise antiga: far-lhe-has -> far-lhe-ás, dar-lhe-hemos -> dar-lhe-emos.
+       Palavra inteira depois do hífen, para não tocar nomes como Maher-shalal-hash-baz. */
+    substituir_palavra_inteira(texto, "has", "ás");              substituir_palavra_inteira(texto, "hemos", "emos");
+    substituir_palavra_inteira(texto, "heis", "eis");            substituir_palavra_inteira(texto, "hia", "ia");
+    substituir_palavra_inteira(texto, "hias", "ias");            substituir_palavra_inteira(texto, "hiam", "iam");
+    {
+        /* Pronome no meio: leval-o-ás -> levá-lo-ás, restituil-os-ás -> restituí-los-ás */
+        static const char *pron[] = {"o", "a", "os", "as"};
+        static const char *fim[] = {"ás", "eis", "emos", "ia", "ias", "iam"};
+        static const char *rad_ant[] = {"uil-", "al-", "el-", "ôl-", "ol-", "il-"};
+        static const char *rad_nov[] = {"uí-l", "á-l", "ê-l", "ô-l", "ô-l", "i-l"};
+        for (int r = 0; r < 6; r++) {
+            for (int p = 0; p < 4; p++) {
+                for (int f = 0; f < 6; f++) {
+                    char ant[32], nov[32];
+                    snprintf(ant, sizeof(ant), "%s%s-%s", rad_ant[r], pron[p], fim[f]);
+                    snprintf(nov, sizeof(nov), "%s%s-%s", rad_nov[r], pron[p], fim[f]);
+                    substituir_texto(texto, ant, nov);
+                }
+            }
+        }
+    }
+
+    /* Derivados de pôr: impozeram -> impuseram, propozera -> propusera */
+    substituir_texto(texto, "poze", "puse");
+    /* caluniar: o acento é só no substantivo "calúnia" */
+    substituir_texto(texto, "calúniad", "caluniad");             substituir_texto(texto, "calúniam", "caluniam");
+    substituir_texto(texto, "calúniando", "caluniando");         substituir_texto(texto, "calúnies", "calunies");
+    substituir_palavra_inteira(texto, "quiseramos", "quiséramos");
+    substituir_palavra_inteira(texto, "infíeis", "infiéis");     substituir_palavra_inteira(texto, "fíeis", "fiéis");
+    /* -iar no presente não leva acento: confiamos, gloriamos, desvieis */
+    substituir_palavra_inteira(texto, "confíamos", "confiamos"); substituir_palavra_inteira(texto, "gloríamos", "gloriamos");
+    substituir_palavra_inteira(texto, "desvíeis", "desvieis");
+    /* Pretérito forte leva acento agudo: tivésseis, tivéssemos */
+    substituir_texto(texto, "tivêss", "tivéss");                 substituir_texto(texto, "Tivêss", "Tivéss");
+    substituir_texto(texto, "estivêss", "estivéss");             substituir_texto(texto, "houvêss", "houvéss");
+    substituir_texto(texto, "soubêss", "soubéss");               substituir_texto(texto, "quisêss", "quiséss");
+    substituir_texto(texto, "fizêss", "fizéss");                 substituir_texto(texto, "pusêss", "puséss");
+    substituir_texto(texto, "dissêss", "disséss");               substituir_texto(texto, "trouxêss", "trouxéss");
+    substituir_texto(texto, "pudêss", "pudéss");                 substituir_texto(texto, "coubêss", "coubéss");
 
     converter_infinitivo_lusitano_para_gerundio(texto);
 }
@@ -1764,7 +1896,7 @@ int main(void) {
         imprimir_linha_centralizada("BÍBLIA DIGITAL ALMEIDA 1911 EM PT-BR (DOMÍNIO PÚBLICO)", LARGURA_PAGINA);
         imprimir_linha_centralizada("Atualização Ortográfica e Gramatical realizada em 11/2026", LARGURA_PAGINA);
         printf("%s%s", COR_RESET, COR_DIM);
-        imprimir_linha_centralizada("Motor de navegação Windows / Linux  |  Autor: Romulo CSR", LARGURA_PAGINA);
+        imprimir_linha_centralizada("Motor de navegação para Windows  |  Autor: Romulo CSR", LARGURA_PAGINA);
         imprimir_linha_centralizada("Download free: github.com/RomuloCSR", LARGURA_PAGINA);
         imprimir_linha_centralizada("Colabore espontaneamente com esta obra via PIX: 21980934118", LARGURA_PAGINA);
         printf("%s", COR_RESET);
