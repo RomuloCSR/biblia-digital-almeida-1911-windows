@@ -1650,6 +1650,8 @@ void atualizar_ortografia(char *texto) {
     {"duns", "de uns"}, {"dumas", "de umas"},
     {"Pamfilia", "Panfília"}, {"Amfipolis", "Anfípolis"},
     {"numero", "número"}, {"Numero", "Número"}, {"numeros", "números"},
+    /* Leitura no app: Gênesis 40-42 */
+    {"Canaan", "Canaã"}, {"Manasseh", "Manassés"}, {"Porem", "Porém"},
     /* Zona invisível 2: palavras certas sozinhas, mas sem acento no sentido do versículo */
     {"numero", "número"}, {"Numero", "Número"},
     {"pacifico", "pacífico"}, {"Pacifico", "Pacífico"},
@@ -2853,6 +2855,12 @@ void atualizar_ortografia(char *texto) {
         substituir_texto(texto, "havia interprete", "havia intérprete"); substituir_texto(texto, "um interprete", "um intérprete");
         substituir_texto(texto, "houver interprete", "houver intérprete");
         substituir_texto(texto, "pouco celebre", "pouco célebre");
+        /* "-mor" não leva acento hoje: copeiro-mor, padeiro-mor, mordomo-mor */
+        substituir_texto(texto, "-mór", "-mor");
+        /* "porem" é verbo (para porem); só aqui é "porém" */
+        substituir_texto(texto, "olhos porem", "olhos porém");
+        /* At 27:16: passado do verbo poder */
+        substituir_texto(texto, "apenas podemos ganhar", "apenas pudemos ganhar");
     }
     converter_infinitivo_lusitano_para_gerundio(texto);
 }
