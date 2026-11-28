@@ -1,13 +1,14 @@
 /* =============================================================================
-- PROJETO: BÃ­blia Digital Almeida 1911 em PT-BR (DomÃ­nio PÃºblico)
--          AtualizaÃ§Ã£o OrtogrÃ¡fica e Gramatical realizada em 11/2026
-- OBJETIVO: Leitor de terminal para Windows 11 (PowerShell / Windows Terminal). Mostra o menu, lÃª os capÃ­tulos
--           (.md) e os exibe em pÃ¡ginas centralizadas.
-- TEXTO:   desde 28/11/2026 a limpeza do Markdown e a atualizaÃ§Ã£o ortogrÃ¡fica
--          vÃªm do kernel da BÃ­blia (pasta kernel/): o mesmo texto do motor,
--          cerca de 12 vezes mais rÃ¡pido, jÃ¡ com os nomes prÃ³prios e a revisÃ£o
--          dos versÃ­culos. As regras sÃ£o editadas no motor.biblia.c e o kernel
--          Ã© gerado de novo (veja kernel/LEIAME.md).
+- PROJETO: Bíblia Digital Almeida 1911 em PT-BR (Domínio Público)
+-          Atualização Ortográfica e Gramatical realizada em 11/2026
+- OBJETIVO: Leitor de terminal para Windows 10 e 11 (PowerShell / Windows Terminal). Mostra o menu, lê os capítulos
+-           (.md) e os exibe em páginas centralizadas.
+- TEXTO:   desde 28/11/2026 a limpeza do Markdown e a atualização ortográfica
+-          vêm do kernel da Bíblia (pasta kernel/): o mesmo texto do motor,
+-          cerca de 12 vezes mais rápido, já com os nomes próprios e a revisão
+-          dos versículos. As regras não ficam neste arquivo: elas são
+-          editadas no motor.biblia.c de origem (fora desta pasta) e o kernel
+-          é gerado de novo a partir dele (veja kernel/LEIAME.md).
 - AUTOR: Romulo CSR (GitHub: RomuloCSR)
 - COMPILAR: gcc -O2 -Wall -Wextra terminal.c kernel/biblia_kernel.c -o motor.biblia.exe
 - =============================================================================
@@ -18,15 +19,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-
-/* -----------------------------------------------------------------------------
-- 1. KERNEL DA BÃBLIA (livros, capÃ­tulos e texto)
--    Nomes, pastas e total de capÃ­tulos: bk_livro_nome/pasta/capitulos(0..65),
--    0..38 = Antigo Testamento, 39..65 = Novo Testamento.
--    Texto de cada verso ou subtÃ­tulo: bk_verso() (limpa o Markdown e atualiza
--    a ortografia). Os arquivos .md nunca sÃ£o alterados; sÃ³ lidos.
-- ----------------------------------------------------------------------------- */
-#include "kernel/biblia_kernel.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -50,6 +42,15 @@
 #define COR_BORDA   "\033[36m"
 #define COR_DIM     "\033[2m"
 
+
+/* -----------------------------------------------------------------------------
+- 1. KERNEL DA BÍBLIA (livros, capítulos e texto)
+-    Nomes, pastas e total de capítulos: bk_livro_nome/pasta/capitulos(0..65),
+-    0..38 = Antigo Testamento, 39..65 = Novo Testamento.
+-    Texto de cada verso ou subtítulo: bk_verso() (limpa o Markdown e atualiza
+-    a ortografia). Os arquivos .md nunca são alterados; só lidos.
+- ----------------------------------------------------------------------------- */
+#include "kernel/biblia_kernel.h"
 /* -----------------------------------------------------------------------------
 - 2. UTILITÁRIOS DE INTERFACE, CENTRALIZAÇÃO E ENTRADA
 - ----------------------------------------------------------------------------- */
@@ -431,7 +432,7 @@ int main(void) {
         printf("%s%s", COR_RESET, COR_DIM);
         imprimir_linha_centralizada("Motor de navegação para Windows  |  Autor: Romulo CSR", LARGURA_PAGINA);
         imprimir_linha_centralizada("Download free: github.com/RomuloCSR", LARGURA_PAGINA);
-        imprimir_linha_centralizada("DoaÃ§Ã£o espontÃ¢nea para a obra via PIX: 21980934118", LARGURA_PAGINA);
+        imprimir_linha_centralizada("Doação espontânea para a obra via PIX: 21980934118", LARGURA_PAGINA);
         printf("%s", COR_RESET);
         imprimir_separador(LARGURA_PAGINA, '=');
         printf("\n");
