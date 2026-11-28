@@ -27,7 +27,7 @@ Leitor bíblico leve, rápido e **100% offline** para **Windows**, baseado na ed
 
 * **Por que o Windows SmartScreen exibe uma tela azul de aviso?** O Windows exibe esse alerta preventivo para qualquer programa novo que não tenha sido assinado por um certificado comercial pago nem publicado na Microsoft Store.
 * **Como abrir tranquilamente:** Na tela azul do Windows, clique em **`Mais informações`** (logo abaixo do texto do aviso) e depois clique no botão **`Executar assim mesmo`**.
-* **Transparência total (Código Aberto):** Todo o código-fonte deste aplicativo (`motor.biblia.c`) e os textos dos 66 livros estão abertos e visíveis nesta página. Qualquer técnico ou programador pode inspecionar o código e confirmar que não há coleta de dados, rastreamento ou arquivos maliciosos.
+* **Transparência total (Código Aberto):** Todo o código-fonte deste aplicativo (`terminal.c` e a pasta `kernel`) e os textos dos 66 livros estão abertos e visíveis nesta página. Qualquer técnico ou programador pode inspecionar o código e confirmar que não há coleta de dados, rastreamento ou arquivos maliciosos.
 
 ---
 
